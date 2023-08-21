@@ -15,11 +15,7 @@ router.get('/', async (req, res) => {
 
   const { name } = req.query;
   console.log(name);
-  if (
-    !name ||
-    name === undefined ||
-    (!isNaN(parseFloat(name)) && isFinite(name))
-  ) {
+  if (typeof name !== 'string' || !name.trim() || !isNaN(parseFloat(name))) {
     res.status(400).send('Name not found!');
     return;
   }
