@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser());
 
-app.use('/api/v1', routes);
+app.use('/', routes);
 
 //Testing
 // app.get('/', async (req: Request, res: Response, next: NextFunction) => {

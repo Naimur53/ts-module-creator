@@ -1,25 +1,21 @@
 import fs from 'fs';
 import path from 'path';
 import archiver from 'archiver';
-import express from 'express';
+import { Request, Response } from 'express';
 import createRouterFile from '../../../helpers/CreateRouterFile';
 import createModelFile from '../../../helpers/CreateModelFile';
 import createInterfaceFile from '../../../helpers/CreateInterfaceFile';
 import createControllerFile from '../../../helpers/CreateControllerFile';
 import createServiceFile from '../../../helpers/CreateServiceFile';
 import createConstant from '../../../helpers/CreateConstantFile';
-const router = express.Router();
 
-router.get('/', async (req, res) => {
+const createFolder = async (req: Request, res: Response): Promise<any> => {
   // Create a unique folder name based on a timestamp
 
-  const { name } = req.query;
+  const { name } = req.params;
   console.log(name);
-  if (typeof name !== 'string' || !name.trim() || !isNaN(parseFloat(name))) {
-    res.status(400).send('Name not found!');
-    return;
-  }
-  const folderName = `${name}`;
+
+  const folderName = `${name + Date.now()}`;
   const folderPath = path.join(__dirname, 'downloads', folderName);
 
   // Ensure the folder exists
@@ -57,18 +53,17 @@ router.get('/', async (req, res) => {
   res.setHeader('Content-Type', 'application/octet-stream');
 
   // Pipe the archive to the response
-  archive.pipe(res);
+  await archive.pipe(res);
 
   // Append the dynamically generated folder to the ZIP archive
-  archive.directory(folderPath, folderName);
+  await archive.directory(folderPath, folderName);
 
   // Finalize the ZIP archive and send it as a downloadable response
   await archive.finalize();
 
   // Optionally, you can remove the generated folder after sending the ZIP
-  await fs.rmdirSync(folderPath, { recursive: true });
+  fs.rmdirSync(folderPath, { recursive: true });
+  res.send('success');
+};
 
-  res.send('dfd');
-});
-
-export const folderRoute = router;
+export const folderCreator = { createFolder };

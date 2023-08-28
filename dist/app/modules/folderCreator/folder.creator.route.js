@@ -7,5 +7,5 @@ exports.createFolderRoute = void 0;
 const express_1 = __importDefault(require("express"));
 const folderCreator_1 = require("./folderCreator");
 const router = express_1.default.Router();
-router.get('/', folderCreator_1.folderRoute);
+router.get('/:name([a-zA-Z]+)', folderCreator_1.folderCreator.createFolder);
 exports.createFolderRoute = router;

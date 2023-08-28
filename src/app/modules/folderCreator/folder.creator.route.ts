@@ -1,7 +1,7 @@
 import express from 'express';
-import { folderRoute } from './folderCreator';
+import { folderCreator } from './folderCreator';
 const router = express.Router();
 
-router.get('/', folderRoute);
+router.get('/:name([a-zA-Z]+)', folderCreator.createFolder);
 
 export const createFolderRoute = router;

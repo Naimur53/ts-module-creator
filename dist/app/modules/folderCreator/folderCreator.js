@@ -12,26 +12,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.folderRoute = void 0;
+exports.folderCreator = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const archiver_1 = __importDefault(require("archiver"));
-const express_1 = __importDefault(require("express"));
 const CreateRouterFile_1 = __importDefault(require("../../../helpers/CreateRouterFile"));
 const CreateModelFile_1 = __importDefault(require("../../../helpers/CreateModelFile"));
 const CreateInterfaceFile_1 = __importDefault(require("../../../helpers/CreateInterfaceFile"));
 const CreateControllerFile_1 = __importDefault(require("../../../helpers/CreateControllerFile"));
 const CreateServiceFile_1 = __importDefault(require("../../../helpers/CreateServiceFile"));
 const CreateConstantFile_1 = __importDefault(require("../../../helpers/CreateConstantFile"));
-const router = express_1.default.Router();
-router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const createFolder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // Create a unique folder name based on a timestamp
-    const { name } = req.query;
+    const { name } = req.params;
     console.log(name);
-    if (typeof name !== 'string' || !name.trim() || !isNaN(parseFloat(name))) {
-        res.status(400).send('Name not found!');
-        return;
-    }
     const folderName = `${name}`;
     const folderPath = path_1.default.join(__dirname, 'downloads', folderName);
     // Ensure the folder exists
@@ -58,13 +52,13 @@ router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.setHeader('Content-Disposition', `attachment; filename="${folderName}.zip"`);
     res.setHeader('Content-Type', 'application/octet-stream');
     // Pipe the archive to the response
-    archive.pipe(res);
+    yield archive.pipe(res);
     // Append the dynamically generated folder to the ZIP archive
-    archive.directory(folderPath, folderName);
+    yield archive.directory(folderPath, folderName);
     // Finalize the ZIP archive and send it as a downloadable response
     yield archive.finalize();
     // Optionally, you can remove the generated folder after sending the ZIP
     yield fs_1.default.rmdirSync(folderPath, { recursive: true });
-    res.send('dfd');
-}));
-exports.folderRoute = router;
+    res.send('success');
+});
+exports.folderCreator = { createFolder };

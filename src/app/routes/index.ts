@@ -4,7 +4,7 @@ const router = express.Router();
 
 const moduleRoutes = [
   {
-    path: '/create-folder',
+    path: '/',
     route: createFolderRoute,
   },
 ];

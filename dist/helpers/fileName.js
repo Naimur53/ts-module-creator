@@ -5,7 +5,6 @@ const fileName = (name) => {
     const lowerCaseName = name.toLocaleLowerCase();
     const allSplit = name.split('');
     allSplit[0] = allSplit[0].toUpperCase();
-    console.log(allSplit);
     upperCaseName = allSplit.join('');
     const result = { upperCaseName, lowerCaseName };
     return result;

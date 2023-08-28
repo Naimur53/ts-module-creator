@@ -8,7 +8,7 @@ const folder_creator_route_1 = require("../modules/folderCreator/folder.creator.
 const router = express_1.default.Router();
 const moduleRoutes = [
     {
-        path: '/create-folder',
+        path: '/',
         route: folder_creator_route_1.createFolderRoute,
     },
 ];
