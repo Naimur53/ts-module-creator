@@ -19,3 +19,8 @@ export type IVerifiedUser = {
   role: ENUM_USER_ROLE.ADMIN | ENUM_USER_ROLE.SELLER | ENUM_USER_ROLE.BUYER;
   _id: string;
 };
+
+export type IContent = {
+  fileName: string;
+  content: string;
+};

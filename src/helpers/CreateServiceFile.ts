@@ -5,8 +5,7 @@ const createServiceFile = async (path: string, name: string) => {
 
   fs.writeFileSync(
     path,
-    `
-    import { SortOrder } from 'mongoose';
+    ` 
     import { paginationHelpers } from '../../../helpers/paginationHelper';
     import { IGenericResponse } from '../../../interfaces/common';
     import { IPaginationOptions } from '../../../interfaces/pagination';

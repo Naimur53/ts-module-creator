@@ -32,4 +32,4 @@ const createFolder = async (req: Request, res: Response): Promise<any> => {
   // res.send('success');
 };
 
-export const folderCreator = { createFolder };
+export const prismaFolderCreator = { createFolder };
