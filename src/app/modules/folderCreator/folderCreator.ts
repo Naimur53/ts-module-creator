@@ -5,8 +5,7 @@ import singleFileCreatorHelper from '../../../helpers/singleFileCreatorHelper';
 import fileName from '../../../helpers/fileName';
 
 const createFolder = async (req: Request, res: Response): Promise<any> => {
-  // Create a unique folder name based on a timestamp
-
+  const { shouldComment = false } = req.query;
   const { name } = req.params;
   const { lowerCaseName } = fileName(name);
 
@@ -22,9 +21,12 @@ const createFolder = async (req: Request, res: Response): Promise<any> => {
   archive.pipe(res);
 
   mongooseAllFileContents.forEach(ele => {
-    archive.append(singleFileCreatorHelper(ele.content, name, false), {
-      name: `${name}/${lowerCaseName}.${ele.fileName}.ts`,
-    });
+    archive.append(
+      singleFileCreatorHelper(ele.content, name, Boolean(shouldComment)),
+      {
+        name: `${name}/${lowerCaseName}.${ele.fileName}.ts`,
+      }
+    );
   });
 
   // Finalize the ZIP archive and send it as a downloadable response
