@@ -1,6 +1,7 @@
 import express from 'express';
-import { createFolderRoute } from '../modules/folderCreator/folder.creator.route';
+import { createFolderRoute } from '../modules/mongooseFolderCreator/mongoose.folder.creator.route';
 import { createPrismaFolderRoute } from '../modules/prismaCreator/prisma.creator.route';
+import { FileToJsonCreatorRoute } from '../modules/fileToJsonCreator/file.json.creator.router';
 const router = express.Router();
 
 const moduleRoutes = [
@@ -11,6 +12,10 @@ const moduleRoutes = [
   {
     path: '/prisma',
     route: createPrismaFolderRoute,
+  },
+  {
+    path: '/create-json-file',
+    route: FileToJsonCreatorRoute,
   },
 ];
 

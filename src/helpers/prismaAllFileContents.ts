@@ -32,7 +32,7 @@ const prismaAllFileContents: IContent[] = [
         import pick from '../../../shared/pick';
         import sendResponse from '../../../shared/sendResponse';
         import { DemoService } from './demo.service';
-        import { demoFilterAbleFields } from './academicSemester.constant';
+        import { demoFilterAbleFields } from './demo.constant';
         const createDemo: RequestHandler = catchAsync(
           async (req: Request, res: Response) => {
             const DemoData = req.body;
