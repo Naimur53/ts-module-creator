@@ -1,11 +1,13 @@
 import archiver from 'archiver';
 import { Request, RequestHandler, Response } from 'express';
-import mongooseAllFileContents from '../../../helpers/mongooseAllFileContents';
+import mongooseAllFileContents from '../../../data/mongooseAllFileContents';
 import singleFileCreatorHelper from '../../../helpers/singleFileCreatorHelper';
 import fileName from '../../../helpers/fileName';
 import catchAsync from '../../../shared/catchAsync';
-import mongooseTemplates from '../../../helpers/mongooseTemplatesContent';
+import mongooseTemplates from '../../../data/mongooseTemplatesContent';
 import indexRouterContentController from '../../../helpers/indexRouterContentCreator';
+import { IContent } from '../../../interfaces/common';
+import modulesStringChecker from '../../../helpers/modulesStringChecker';
 
 const createFolder = catchAsync(async (req: Request, res: Response) => {
   const { shouldComment = false } = req.query;
@@ -39,8 +41,12 @@ const createFolder = catchAsync(async (req: Request, res: Response) => {
 const createMongooseTemplate: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const { shouldComment = false } = req.query;
+    const { modules = ['demo'] }: { modules: string[] } = req.body;
     const { name } = req.params;
-    const { lowerCaseName } = fileName(name);
+    // const { lowerCaseName } = fileName(name);
+
+    // throw a error if found random type string
+    modulesStringChecker(modules);
 
     const archive = archiver('zip', {
       zlib: { level: 9 }, // Set compression level
@@ -53,16 +59,23 @@ const createMongooseTemplate: RequestHandler = catchAsync(
     // Pipe the archive to the response
 
     archive.pipe(res);
-    let newModules = [];
-    newModules = mongooseAllFileContents.map(single => ({
-      content: singleFileCreatorHelper(
-        single.content,
-        name,
-        Boolean(shouldComment)
-      ),
-      fileName: single.fileName,
-      filePath: `src\\app\\modules\\${name}\\${lowerCaseName}.${single.fileName}.ts`,
-    }));
+    let newModules: IContent[] = [];
+
+    modules.forEach(element => {
+      const { lowerCaseName } = fileName(element);
+      mongooseAllFileContents.forEach(single => {
+        const singleModules = {
+          content: singleFileCreatorHelper(
+            single.content,
+            lowerCaseName,
+            Boolean(shouldComment)
+          ),
+          fileName: single.fileName,
+          filePath: `src\\app\\modules\\${element}\\${lowerCaseName}.${single.fileName}.ts`,
+        };
+        newModules = [...newModules, singleModules];
+      });
+    });
 
     const allFilesAndFolder = [...mongooseTemplates, ...newModules];
     // change content for routes/index.ts
@@ -73,7 +86,7 @@ const createMongooseTemplate: RequestHandler = catchAsync(
     );
 
     allFilesAndFolder[routesIndexTsFileIndex].content =
-      indexRouterContentController([name]);
+      indexRouterContentController(modules);
 
     // create all folder and file
     allFilesAndFolder.forEach(ele => {
@@ -82,7 +95,7 @@ const createMongooseTemplate: RequestHandler = catchAsync(
         ele.content,
 
         {
-          name: ele.filePath,
+          name: ele.filePath + '',
         }
       );
     });

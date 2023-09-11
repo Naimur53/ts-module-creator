@@ -39,7 +39,7 @@ const fileToJsonCreator = async (): Promise<IContent[]> => {
     return filesArray;
   }
 
-  const rootPath = 'src/templates/mongoose'; // Root path
+  const rootPath = 'src/templates/react'; // Root path
   const fileObjectsArray = readDirectoryRecursively(rootPath);
   return fileObjectsArray;
 };
