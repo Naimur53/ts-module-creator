@@ -3,9 +3,14 @@ import { createFolderRoute } from '../modules/mongooseFolderCreator/mongoose.fol
 import { createPrismaFolderRoute } from '../modules/prismaCreator/prisma.creator.route';
 import { FileToJsonCreatorRoute } from '../modules/fileToJsonCreator/file.json.creator.router';
 import { createRectFolderRoute } from '../modules/reactFolderCreator/react.folder.creator.route';
+import { UserRoutes } from '../modules/user/user.router';
 const router = express.Router();
 
 const moduleRoutes = [
+  {
+    path: '/users',
+    route: UserRoutes,
+  },
   {
     path: '/mongoose',
     route: createFolderRoute,

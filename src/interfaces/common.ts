@@ -25,3 +25,8 @@ export type IContent = {
   content: string;
   filePath?: string;
 };
+
+export enum ITechnology {
+  JavaScript = 'js',
+  Typescript = 'ts',
+}

@@ -101,6 +101,7 @@ const mongooseAllFileContents: IContent[] = [
     fileName: 'service',
     content: `import { paginationHelpers } from '../../../helpers/paginationHelper';
         import { IGenericResponse } from '../../../interfaces/common';
+        import { SortOrder } from 'mongoose';
         import { IPaginationOptions } from '../../../interfaces/pagination';
         import { IDemo, IDemoFilters } from './demo.interface';
         import { Demo } from './demo.model';
