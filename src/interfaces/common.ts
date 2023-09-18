@@ -26,7 +26,19 @@ export type IContent = {
   filePath?: string;
 };
 
+export type IPackage = {
+  name: string;
+  version: string;
+};
+
 export enum ITechnology {
+  // eslint-disable-next-line no-unused-vars
   JavaScript = 'js',
+  // eslint-disable-next-line no-unused-vars
   Typescript = 'ts',
 }
+
+export type IAdditionalDependencies = {
+  name: string;
+  version: string;
+};

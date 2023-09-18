@@ -1,13 +1,12 @@
 import archiver from 'archiver';
 import { Request, Response } from 'express';
 import singleFileCreatorHelper from '../../../helpers/singleFileCreatorHelper';
-import fileName from '../../../helpers/fileName';
 import { IContent } from '../../../interfaces/common';
 import reduxTsApiFileContent from '../../../data/reduxTsApiFileContent';
 import reactReduxTemplates from '../../../data/reactReduxTemplates';
-import reactTsHooks from '../../../data/reactTsHooks';
 import { IReactReduxTemplateRequestService } from './react.folder.creator.interface';
 import { reactGenerator } from './react.folder.creator.utils';
+import pureReact from '../../../data/pureReact';
 
 const createReactReduxFeatures = async (
   req: Request,
@@ -55,7 +54,6 @@ const createReactReduxFeatures = async (
 
 const createReactReduxTemplate = async ({
   pages,
-  shouldComment,
   apis,
   hooks,
   name,
@@ -71,55 +69,36 @@ const createReactReduxTemplate = async ({
   // for creating pages
   const newPages = reactGenerator.reactPagesGenerator(pages);
   // for api slice redux
-  let newReduxApiSlice: IContent[] = [];
-
-  apis.forEach(singleName => {
-    const { lowerCaseName } = fileName(singleName);
-
-    const singleModules = {
-      content: singleFileCreatorHelper(
-        reduxTsApiFileContent,
-        lowerCaseName,
-        shouldComment
-      ),
-      fileName: singleName,
-      filePath: `src\\redux\\features\\${singleName}\\${singleName}Api.ts`,
-    };
-    newReduxApiSlice = [...newReduxApiSlice, singleModules];
-  });
+  const newReduxApiSlice = reactGenerator.createReduxApiSlicesFile(apis);
   // for hooks
-  const filteredHook = reactTsHooks.filter(singleReactHook => {
-    return hooks.find(singleExpectedHook =>
-      singleReactHook.fileName.includes(singleExpectedHook)
-    );
-  });
+  const filteredHook = reactGenerator.selectedHook(hooks);
 
-  const allFilesAndFolder: IContent[] = [
-    ...reactReduxTemplates,
-    ...newReduxApiSlice,
-    ...newPages,
-    ...filteredHook,
-  ];
+  // const allFilesAndFolder: IContent[] = [
+  //   ..._.clone(reactReduxTemplates),
+  //   ...newReduxApiSlice,
+  //   ...newPages,
+  //   ...filteredHook,
+  // ];
 
+  const allFilesAndFolder: IContent[] = JSON.parse(JSON.stringify(pureReact));
+
+  reactGenerator.addTailwindToReact(allFilesAndFolder);
   // change app.ts content for pages
-  const appFilePath = 'src\\App.tsx';
-  const appPageIndex = allFilesAndFolder.findIndex(
-    single => single.filePath === appFilePath
+
+  // const appFilePath = 'src\\App.tsx';
+  // reactGenerator.changeExistingFileContent(
+  //   appFilePath,
+  //   reactGenerator.appFileContentGenerate(pages),
+  //   allFilesAndFolder
+  // );
+  // add warper
+  reactGenerator.addWrapper(
+    allFilesAndFolder,
+    'ReduxProvider',
+    "import ReduxProvider from '../../middlewares'"
   );
-  allFilesAndFolder[appPageIndex].content =
-    reactGenerator.appFileContentGenerate(pages);
-
   // create all folder and file
-  allFilesAndFolder.forEach(ele => {
-    archive.append(
-      // singleFileCreatorHelper(ele.content, name, Boolean(shouldComment)),
-      singleFileCreatorHelper(ele.content, name, shouldComment),
-
-      {
-        name: ele.filePath + '',
-      }
-    );
-  });
+  reactGenerator.generateAllFolderAndFile(name, allFilesAndFolder, archive);
 
   // Finalize the ZIP archive and send it as a downloadable response
   // await archive.finalize();
