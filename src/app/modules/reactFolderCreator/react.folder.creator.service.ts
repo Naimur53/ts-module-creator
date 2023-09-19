@@ -82,7 +82,8 @@ const createReactReduxTemplate = async ({
 
   const allFilesAndFolder: IContent[] = JSON.parse(JSON.stringify(pureReact));
 
-  reactGenerator.addTailwindToReact(allFilesAndFolder);
+  // reactGenerator.addTailwindToReact(allFilesAndFolder);
+  reactGenerator.addMUiToReact(allFilesAndFolder);
   // change app.ts content for pages
 
   // const appFilePath = 'src\\App.tsx';

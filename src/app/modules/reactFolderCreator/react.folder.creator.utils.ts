@@ -139,7 +139,7 @@ const changeExistingFileContent = (
 
 const addWrapper = (
   allFileAndFolder: IContent[],
-  wrapperName: string,
+  wrapperName: string | undefined,
   importFrom: string
 ): void => {
   const indexJsFile = allFileAndFolder.find(
@@ -149,14 +149,16 @@ const addWrapper = (
   if (!indexJsFile) {
     throw new ApiError(httpStatus.BAD_REQUEST, `can't find index.js File`);
   }
-  indexJsFile.content = indexJsFile.content.replace(
-    /<React.StrictMode>([\s\S]*?)<\/React.StrictMode>/,
-    `<React.StrictMode>
-      <${wrapperName}>
-        $1
-      </${wrapperName}>
-    </React.StrictMode>`
-  );
+  if (wrapperName) {
+    indexJsFile.content = indexJsFile.content.replace(
+      /<React.StrictMode>([\s\S]*?)<\/React.StrictMode>/,
+      `<React.StrictMode>
+        <${wrapperName}>
+          $1
+        </${wrapperName}>
+      </React.StrictMode>`
+    );
+  }
   const startIndex = indexJsFile.content.indexOf('import React from');
   const endIndex = indexJsFile.content.indexOf('import reportWebVitals');
 
@@ -195,6 +197,17 @@ const addTailwindToReact = (allFilesAndFolder: IContent[]): void => {
     true
   );
 };
+const addMUiToReact = (allFilesAndFolder: IContent[]) => {
+  packageJsonFile.addDependenciesToProject(
+    allFilesAndFolder,
+    [
+      { name: '@mui/material', version: '^5.14.10' },
+      { name: '@emotion/react', version: '^11.11.1' },
+      { name: '@emotion/styled', version: '^11.11.0' },
+    ],
+    true
+  );
+};
 export const reactGenerator = {
   createReduxApiSlicesFile,
   appFileContentGenerate,
@@ -203,5 +216,6 @@ export const reactGenerator = {
   generateAllFolderAndFile,
   changeExistingFileContent,
   addTailwindToReact,
+  addMUiToReact,
   addWrapper,
 };
