@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { ITechnology } from '../../../interfaces/common';
+import { IContent, ITechnology } from '../../../interfaces/common';
 
 // MUI = 'MUI (Material-UI)',
 // TailwindCSS = 'Tailwind CSS',
@@ -13,10 +13,11 @@ type INpmPackage = {
   addToDevDependencies?: boolean;
 };
 type IWrap = {
-  wrapperName: string | undefined;
+  wrapperNameFirst?: string | undefined;
+  wrapperNameLast?: string | undefined;
   importFrom: string;
 };
-type IFirebaseAuth = {
+export type IFirebaseAuth = {
   config: {
     apiKey: string;
     authDomain: string;
@@ -24,6 +25,7 @@ type IFirebaseAuth = {
     storageBucket: string;
     messagingSenderId: string;
     appId: string;
+    measurementId: string;
   };
   auth: string[];
 };
@@ -38,9 +40,9 @@ export type IReactReduxTemplateRequestBody = {
   hooks?: string[];
   firebaseAuth?: IFirebaseAuth;
   technology: ITechnology;
-  cssFrameWork?: ICssFramework;
   npmPackages?: INpmPackage[];
   wrappers?: IWrap[];
+  othersFileFolder?: IContent[];
 };
 
 export type IReactReduxTemplateRequestService =

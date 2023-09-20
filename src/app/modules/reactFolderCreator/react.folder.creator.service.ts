@@ -62,39 +62,61 @@ const createReactReduxTemplate = async ({
   npmPackages,
   technology,
   wrappers,
-  othersFile,
+  othersFileFolder,
 }: IReactReduxTemplateRequestService): Promise<archiver.Archiver> => {
   const archive = archiver('zip', {
     zlib: { level: 9 }, // Set compression level
   });
 
   // for creating pages
-  let newPages = [];
+  let newPages: IContent[] = [];
   if (pages) {
     newPages = reactGenerator.reactPagesGenerator(pages);
   }
   // for api slice redux
-  let newReduxApiSlice = [];
+  let newReduxApiSlice: IContent[] = [];
   if (apis) {
     newReduxApiSlice = reactGenerator.createReduxApiSlicesFile(apis);
   }
   // for hooks
-  let filteredHook = [];
+  let filteredHook: IContent[] = [];
   if (hooks) {
     filteredHook = reactGenerator.selectedHook(hooks);
   }
 
-  // const allFilesAndFolder: IContent[] = [
-  //   ..._.clone(reactReduxTemplates),
-  //   ...newReduxApiSlice,
-  //   ...newPages,
-  //   ...filteredHook,
-  // ];
+  const allFilesAndFolderDemo: IContent[] = [
+    ...pureReact,
+    // ...newReduxApiSlice,
+    // ...newPages,
+    // ...filteredHook,
+  ];
 
-  const allFilesAndFolder: IContent[] = JSON.parse(JSON.stringify(pureReact));
+  const allFilesAndFolder: IContent[] = JSON.parse(
+    JSON.stringify(allFilesAndFolderDemo)
+  );
 
   // reactGenerator.addTailwindToReact(allFilesAndFolder);
-  reactGenerator.addMUiToReact(allFilesAndFolder);
+  // adding others files Or folders
+  if (othersFileFolder) {
+    allFilesAndFolder.push(...othersFileFolder);
+  }
+  // add warper
+  if (wrappers) {
+    wrappers.forEach(ele => {
+      reactGenerator.addWrapper(
+        allFilesAndFolder,
+        ele.importFrom,
+        ele.wrapperNameFirst,
+        ele.wrapperNameLast
+      );
+    });
+  }
+
+  // add firebaseAuth
+  if (firebaseAuth?.auth) {
+    reactGenerator.addFirebase(allFilesAndFolder, firebaseAuth, technology);
+  }
+  // reactGenerator.addMUiToReact(allFilesAndFolder);
   // change app.ts content for pages
 
   // const appFilePath = 'src\\App.tsx';
@@ -103,12 +125,7 @@ const createReactReduxTemplate = async ({
   //   reactGenerator.appFileContentGenerate(pages),
   //   allFilesAndFolder
   // );
-  // add warper
-  reactGenerator.addWrapper(
-    allFilesAndFolder,
-    'ReduxProvider',
-    "import ReduxProvider from '../../middlewares'"
-  );
+
   // create all folder and file
   reactGenerator.generateAllFolderAndFile(name, allFilesAndFolder, archive);
 
@@ -121,103 +138,3 @@ export const reactFolderCreatorService = {
   createReactReduxFeatures,
   createReactReduxTemplate,
 };
-
-// user firebase
-// import { useEffect, useState } from 'react';
-// import firebase from 'firebase/app';
-// import 'firebase/auth';
-
-// const useFirebaseAuth = () => {
-//   const [user, setUser] = useState(null);
-
-//   useEffect(() => {
-//     const unsubscribe = firebase.auth().onAuthStateChanged((authUser) => {
-//       if (authUser) {
-//         setUser(authUser);
-//       } else {
-//         setUser(null);
-//       }
-//     });
-
-//     return () => unsubscribe();
-//   }, []);
-
-//   const auth = firebase.auth();
-
-//   const {
-//     GoogleAuthProvider,
-//     FacebookAuthProvider,
-//     GithubAuthProvider,
-//     signInWithPopup,
-//     getRedirectResult,
-//     signInWithRedirect,
-//     signInWithEmailAndPassword,
-//     createUserWithEmailAndPassword,
-//   } = auth;
-
-//   const signInWithGoogle = async (usePopup = true) => {
-//     const provider = new GoogleAuthProvider();
-//     if (usePopup) {
-//       await signInWithPopup(auth, provider);
-//     } else {
-//       await signInWithRedirect(auth, provider);
-//     }
-//   };
-
-//   const signInWithFacebook = async (usePopup = true) => {
-//     const provider = new FacebookAuthProvider();
-//     if (usePopup) {
-//       await signInWithPopup(auth, provider);
-//     } else {
-//       await signInWithRedirect(auth, provider);
-//     }
-//   };
-
-//   const signInWithGitHub = async (usePopup = true) => {
-//     const provider = new GithubAuthProvider();
-//     if (usePopup) {
-//       await signInWithPopup(auth, provider);
-//     } else {
-//       await signInWithRedirect(auth, provider);
-//     }
-//   };
-
-//   useEffect(() => {
-//     const handleRedirectResult = async () => {
-//       try {
-//         const result = await getRedirectResult(auth);
-//         if (result.user) {
-//           setUser(result.user);
-//         }
-//       } catch (error) {
-//         console.error('Error handling redirect:', error);
-//       }
-//     };
-
-//     handleRedirectResult();
-//   }, [auth]);
-
-//   const signInWithEmailAndPassword = (email, password) => {
-//     return signInWithEmailAndPassword(auth, email, password);
-//   };
-
-//   const signUpWithEmailAndPassword = (email, password) => {
-//     return createUserWithEmailAndPassword(auth, email, password);
-//   };
-
-//   const signOut = () => {
-//     return auth.signOut();
-//   };
-
-//   return {
-//     user,
-//     signInWithGoogle,
-//     signInWithFacebook,
-//     signInWithGitHub,
-//     signInWithEmailAndPassword,
-//     signUpWithEmailAndPassword,
-//     signOut,
-//   };
-// };
-
-// export default useFirebaseAuth;

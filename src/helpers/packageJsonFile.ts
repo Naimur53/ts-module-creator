@@ -64,7 +64,7 @@ const addDependencies = (
 const addDependenciesToProject = (
   allFilesAndFolder: IContent[],
   packages: IPackage[],
-  toDevDependencies: boolean | undefined
+  toDevDependencies?: boolean | undefined
 ): void => {
   const packageFile = getPackageJsonFile(allFilesAndFolder);
 

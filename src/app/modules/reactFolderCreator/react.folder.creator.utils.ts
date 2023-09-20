@@ -5,10 +5,13 @@ import reactTsHooks from '../../../data/reactTsHooks';
 import reduxTsApiFileContent from '../../../data/reduxTsApiFileContent';
 import fileName from '../../../helpers/fileName';
 import singleFileCreatorHelper from '../../../helpers/singleFileCreatorHelper';
-import { IContent } from '../../../interfaces/common';
+import { IContent, ITechnology } from '../../../interfaces/common';
 import reactTailwindFilesAndContent from '../../../data/reactTailwindFilesAndContent';
 import ApiError from '../../../errors/ApiError';
 import httpStatus from 'http-status';
+import firebaseFolder from '../../../data/firebaseFolder';
+import { firebaseHookGenerator } from '../../../helpers/firebaseHookGenerator';
+import { IFirebaseAuth } from './react.folder.creator.interface';
 
 export const availableHooks = [
   'useCustomHook.ts',
@@ -139,8 +142,9 @@ const changeExistingFileContent = (
 
 const addWrapper = (
   allFileAndFolder: IContent[],
-  wrapperName: string | undefined,
-  importFrom: string
+  importFrom: string,
+  wrapperNameFirst?: string,
+  wrapperNameLast?: string
 ): void => {
   const indexJsFile = allFileAndFolder.find(
     single => single.filePath === 'src\\index.js'
@@ -149,13 +153,13 @@ const addWrapper = (
   if (!indexJsFile) {
     throw new ApiError(httpStatus.BAD_REQUEST, `can't find index.js File`);
   }
-  if (wrapperName) {
+  if (wrapperNameFirst) {
     indexJsFile.content = indexJsFile.content.replace(
       /<React.StrictMode>([\s\S]*?)<\/React.StrictMode>/,
       `<React.StrictMode>
-        <${wrapperName}>
+        <${wrapperNameFirst}>
           $1
-        </${wrapperName}>
+        </${wrapperNameLast || wrapperNameFirst}>
       </React.StrictMode>`
     );
   }
@@ -208,6 +212,48 @@ const addMUiToReact = (allFilesAndFolder: IContent[]) => {
     true
   );
 };
+
+const addFirebase = (
+  allFileAndFolder: IContent[],
+  firebaseAuth: IFirebaseAuth,
+  technology: ITechnology
+): void => {
+  const fileName = `useFirebase.${technology}`;
+  const useFirebaseHook: IContent = {
+    fileName: fileName,
+    filePath: 'src\\hooks\\' + fileName,
+    content: firebaseHookGenerator.generateUseFirebaseHookContent(
+      firebaseAuth.auth,
+      technology
+    ),
+  };
+
+  allFileAndFolder.push(...firebaseFolder, useFirebaseHook);
+  // add Env
+  if (Object.keys(firebaseAuth.config).length) {
+    const config = firebaseAuth.config;
+    const envLocal: IContent = {
+      fileName: 'env.local',
+      filePath: 'env.local',
+      content: `
+REACT_APP_API_KEY=${config.apiKey}
+REACT_APP_AUTH_DOMAIN=${config.authDomain}
+REACT_APP_PROJECT_ID=${config.projectId}
+REACT_APP_STORAGE_BUCKET=${config.storageBucket}
+REACT_APP_MESSAGE_ID=${config.messagingSenderId}
+REACT_APP_APP_ID=${config.appId}
+REACT_APP_MEASUREMENT_ID=${config.measurementId}
+        `,
+    };
+    console.log(config);
+
+    allFileAndFolder.push(envLocal);
+  }
+  // add package
+  packageJsonFile.addDependenciesToProject(allFileAndFolder, [
+    { name: 'firebase', version: '^10.4.0' },
+  ]);
+};
 export const reactGenerator = {
   createReduxApiSlicesFile,
   appFileContentGenerate,
@@ -218,4 +264,5 @@ export const reactGenerator = {
   addTailwindToReact,
   addMUiToReact,
   addWrapper,
+  addFirebase,
 };
