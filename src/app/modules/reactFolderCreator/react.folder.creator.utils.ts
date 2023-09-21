@@ -1,6 +1,6 @@
 import { packageJsonFile } from './../../../helpers/packageJsonFile';
 import { Archiver } from 'archiver';
-import reactPageContent from '../../../data/reactPageContent';
+import { reactPageContent } from '../../../data/reactPageContent';
 import reactTsHooks from '../../../data/reactTsHooks';
 import reduxTsApiFileContent from '../../../data/reduxTsApiFileContent';
 import fileName from '../../../helpers/fileName';
@@ -12,6 +12,7 @@ import httpStatus from 'http-status';
 import firebaseFolder from '../../../data/firebaseFolder';
 import { firebaseHookGenerator } from '../../../helpers/firebaseHookGenerator';
 import { IFirebaseAuth } from './react.folder.creator.interface';
+import reactJsHooks from '../../../data/reactJsHooks';
 
 export const availableHooks = [
   'useCustomHook.ts',
@@ -68,14 +69,25 @@ export default App;
   return content;
 };
 
-const reactPagesGenerator = (pages: string[]): IContent[] => {
+const reactPagesGenerator = (
+  pages: string[],
+  technology: ITechnology
+): IContent[] => {
   let newPages: IContent[] = [];
   pages.forEach(singlePage => {
     const { lowerCaseName, upperCaseName } = fileName(singlePage);
     const singlePageInfo: IContent = {
-      content: singleFileCreatorHelper(reactPageContent, lowerCaseName, false),
+      content: singleFileCreatorHelper(
+        technology === ITechnology.JavaScript
+          ? reactPageContent.jsPage
+          : reactPageContent.tsPage,
+        lowerCaseName,
+        false
+      ),
       fileName: singlePage,
-      filePath: `src\\Pages\\${upperCaseName}\\${upperCaseName}.tsx`,
+      filePath: `src\\Pages\\${upperCaseName}\\${upperCaseName}.${
+        technology === ITechnology.JavaScript ? 'js' : 'tsx'
+      }`,
     };
 
     newPages = [...newPages, singlePageInfo];
@@ -103,13 +115,23 @@ const createReduxApiSlicesFile = (apis: string[]): IContent[] => {
   return newReduxApiSlice;
 };
 
-const selectedHook = (requestedHook: string[]): IContent[] => {
-  reactTsHooks.filter(singleReactHook => {
-    return requestedHook.find(singleExpectedHook =>
-      singleReactHook.fileName.includes(singleExpectedHook)
-    );
-  });
-  return reactTsHooks;
+const selectedHook = (
+  requestedHook: string[],
+  technology: ITechnology
+): IContent[] => {
+  if (technology === ITechnology.JavaScript) {
+    return reactJsHooks.filter(singleReactHook => {
+      return requestedHook.find(singleExpectedHook =>
+        singleReactHook.fileName.includes(singleExpectedHook)
+      );
+    });
+  } else {
+    return reactTsHooks.filter(singleReactHook => {
+      return requestedHook.find(singleExpectedHook =>
+        singleReactHook.fileName.includes(singleExpectedHook)
+      );
+    });
+  }
 };
 
 const generateAllFolderAndFile = (

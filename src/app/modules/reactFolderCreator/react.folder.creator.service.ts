@@ -7,6 +7,7 @@ import reactReduxTemplates from '../../../data/reactReduxTemplates';
 import { IReactReduxTemplateRequestService } from './react.folder.creator.interface';
 import { reactGenerator } from './react.folder.creator.utils';
 import pureReact from '../../../data/pureReact';
+import { packageJsonFile } from '../../../helpers/packageJsonFile';
 
 const createReactReduxFeatures = async (
   req: Request,
@@ -71,7 +72,7 @@ const createReactReduxTemplate = async ({
   // for creating pages
   let newPages: IContent[] = [];
   if (pages) {
-    newPages = reactGenerator.reactPagesGenerator(pages);
+    newPages = reactGenerator.reactPagesGenerator(pages, technology);
   }
   // for api slice redux
   let newReduxApiSlice: IContent[] = [];
@@ -81,7 +82,7 @@ const createReactReduxTemplate = async ({
   // for hooks
   let filteredHook: IContent[] = [];
   if (hooks) {
-    filteredHook = reactGenerator.selectedHook(hooks);
+    filteredHook = reactGenerator.selectedHook(hooks, technology);
   }
 
   const allFilesAndFolderDemo: IContent[] = [
@@ -111,7 +112,15 @@ const createReactReduxTemplate = async ({
       );
     });
   }
-
+  if (npmPackages?.length) {
+    npmPackages.forEach(single => {
+      packageJsonFile.addDependenciesToProject(
+        allFilesAndFolder,
+        [{ name: single.name, version: single.version }],
+        single.addToDevDependencies
+      );
+    });
+  }
   // add firebaseAuth
   if (firebaseAuth?.auth) {
     reactGenerator.addFirebase(allFilesAndFolder, firebaseAuth, technology);
