@@ -1,100 +1,82 @@
-import archiver from 'archiver';
-import { Request, Response } from 'express';
-import singleFileCreatorHelper from '../../../helpers/singleFileCreatorHelper';
-import { IContent } from '../../../interfaces/common';
-import reduxTsApiFileContent from '../../../data/reduxTsApiFileContent';
-import reactReduxTemplates from '../../../data/reactReduxTemplates';
-import { IReactReduxTemplateRequestService } from './react.folder.creator.interface';
+import archiver, { Archiver } from 'archiver';
+import { IContent, ITechnology } from '../../../interfaces/common';
+import { IReactTemplateRequestService } from './react.folder.creator.interface';
 import { reactGenerator } from './react.folder.creator.utils';
 import pureReact from '../../../data/pureReact';
 import { packageJsonFile } from '../../../helpers/packageJsonFile';
+import reactTs from '../../../data/reactTs';
+import ApiError from '../../../errors/ApiError';
+import httpStatus from 'http-status';
 
-const createReactReduxFeatures = async (
-  req: Request,
-  res: Response
-): Promise<any> => {
-  const { shouldComment = false } = req.query;
-
-  const { name } = req.params;
-  //   const { lowerCaseName } = fileName(name);
-
+const createReactReduxFeatures = async ({
+  apis,
+  name,
+  technology,
+}: {
+  apis: string[];
+  shouldComment: boolean;
+  name: string;
+  technology: ITechnology;
+}): Promise<Archiver> => {
   const archive = archiver('zip', {
     zlib: { level: 9 }, // Set compression level
   });
-
-  // Set headers to trigger the download
-  res.setHeader('Content-Disposition', `attachment; filename="${name}.zip"`);
-  res.setHeader('Content-Type', 'application/octet-stream');
-
-  // Pipe the archive to the response
-  archive.pipe(res);
-
-  archive.append(
-    singleFileCreatorHelper(
-      reduxTsApiFileContent,
-      name,
-      Boolean(shouldComment)
-    ),
-    {
-      name: `${name}/${name}Api.ts`,
-    }
+  const allFiles: IContent[] = [];
+  if (!apis.length) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'api Slice names not found!');
+  }
+  allFiles.push(
+    ...reactGenerator.createReduxApiSlicesFile(apis, technology, true)
   );
-  //   prismaAllFileContents.forEach(ele => {
-  //     archive.append(
-  //       singleFileCreatorHelper(ele.content, name, Boolean(shouldComment)),
-  //       {
-  //         name: `${name}/${lowerCaseName}.${ele.fileName}.ts`,
-  //       }
-  //     );
-  //   });
-
-  // Finalize the ZIP archive and send it as a downloadable response
-  await archive.finalize();
-  // res.send('success');
+  reactGenerator.generateAllFolderAndFile(name, allFiles, archive);
+  return archive;
 };
 
-const createReactReduxTemplate = async ({
+const createReactTemplate = async ({
   pages,
   apis,
   hooks,
   name,
-  cssFrameWork,
   firebaseAuth,
   npmPackages,
   technology,
   wrappers,
   othersFileFolder,
-}: IReactReduxTemplateRequestService): Promise<archiver.Archiver> => {
+}: IReactTemplateRequestService): Promise<archiver.Archiver> => {
   const archive = archiver('zip', {
     zlib: { level: 9 }, // Set compression level
   });
 
+  const allFilesAndFolder: IContent[] = JSON.parse(
+    JSON.stringify(technology === ITechnology.JavaScript ? pureReact : reactTs)
+  );
+
   // for creating pages
-  let newPages: IContent[] = [];
   if (pages) {
-    newPages = reactGenerator.reactPagesGenerator(pages, technology);
+    allFilesAndFolder.push(
+      ...reactGenerator.reactPagesGenerator(pages, technology)
+    );
+    const appFilePath = `src\\App.${
+      technology === ITechnology.JavaScript ? technology : 'tsx'
+    }`;
+    reactGenerator.changeExistingFileContent(
+      appFilePath,
+      reactGenerator.appFileContentGenerate(pages),
+      allFilesAndFolder
+    );
   }
   // for api slice redux
-  let newReduxApiSlice: IContent[] = [];
-  if (apis) {
-    newReduxApiSlice = reactGenerator.createReduxApiSlicesFile(apis);
+  if (apis?.length) {
+    allFilesAndFolder.push(
+      ...reactGenerator.createReduxApiSlicesFile(apis, technology)
+    );
+    // add redux
+    reactGenerator.addRedux(allFilesAndFolder, technology);
   }
   // for hooks
-  let filteredHook: IContent[] = [];
   if (hooks) {
-    filteredHook = reactGenerator.selectedHook(hooks, technology);
+    allFilesAndFolder.push(...reactGenerator.selectedHook(hooks, technology));
   }
-
-  const allFilesAndFolderDemo: IContent[] = [
-    ...pureReact,
-    // ...newReduxApiSlice,
-    // ...newPages,
-    // ...filteredHook,
-  ];
-
-  const allFilesAndFolder: IContent[] = JSON.parse(
-    JSON.stringify(allFilesAndFolderDemo)
-  );
 
   // reactGenerator.addTailwindToReact(allFilesAndFolder);
   // adding others files Or folders
@@ -106,6 +88,7 @@ const createReactReduxTemplate = async ({
     wrappers.forEach(ele => {
       reactGenerator.addWrapper(
         allFilesAndFolder,
+        technology,
         ele.importFrom,
         ele.wrapperNameFirst,
         ele.wrapperNameLast
@@ -128,13 +111,6 @@ const createReactReduxTemplate = async ({
   // reactGenerator.addMUiToReact(allFilesAndFolder);
   // change app.ts content for pages
 
-  // const appFilePath = 'src\\App.tsx';
-  // reactGenerator.changeExistingFileContent(
-  //   appFilePath,
-  //   reactGenerator.appFileContentGenerate(pages),
-  //   allFilesAndFolder
-  // );
-
   // create all folder and file
   reactGenerator.generateAllFolderAndFile(name, allFilesAndFolder, archive);
 
@@ -145,5 +121,5 @@ const createReactReduxTemplate = async ({
 
 export const reactFolderCreatorService = {
   createReactReduxFeatures,
-  createReactReduxTemplate,
+  createReactTemplate,
 };

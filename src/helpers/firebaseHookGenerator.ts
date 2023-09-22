@@ -168,8 +168,8 @@ const generateUseFirebaseHookContent = (
       const handleRedirectResult = async () => {
         try {
           const result = await getRedirectResult(auth);
-          if (result.user) {
-            setUser(result.user);
+          if (result?.user) {
+            setUser(result?.user);
           }
         } catch (error) {
           console.error("Error handling redirect:", error);
@@ -200,6 +200,7 @@ const generateUseFirebaseHookContent = (
       ${willKeepRedirect ? 'getRedirectResult,\n signInWithRedirect,' : ''} 
       ${geneRateCode.allImports}
       getAuth,
+      User,
     } from "firebase/auth";
     import firebaseInit from "../firebase/firebase.init";
     
@@ -240,8 +241,8 @@ const generateUseFirebaseHookContent = (
       const handleRedirectResult = async (): Promise<void> => {
         try {
           const result = await getRedirectResult(auth);
-          if (result.user) {
-            setUser(result.user);
+          if (result?.user) {
+            setUser(result?.user);
           }
         } catch (error) {
           console.error("Error handling redirect:", error);

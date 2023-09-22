@@ -1,15 +1,19 @@
 import express from 'express';
-import { reactFolderCreatorService } from './react.folder.creator.service';
 import { reactFolderCreatorController } from './react.folder.creator.controller';
+import validateRequest from '../../middlewares/validateRequest';
+import { reactFolderCreatorZodValidation } from './react.folder.creator.validation';
 const router = express.Router();
 
 router.post(
   '/tem/:name([a-zA-Z]+)',
-  reactFolderCreatorController.createReactReduxTemplate
+  validateRequest(
+    reactFolderCreatorZodValidation.reactFolderCreatorTemplateSchema
+  ),
+  reactFolderCreatorController.createReactTemplate
 );
-router.get(
-  '/:name([a-zA-Z]+)',
-  reactFolderCreatorService.createReactReduxFeatures
+router.post(
+  '/redux/:name([a-zA-Z]+)',
+  reactFolderCreatorController.createReduxFile
 );
 
 export const createRectFolderRoute = router;

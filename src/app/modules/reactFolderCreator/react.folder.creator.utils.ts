@@ -9,10 +9,11 @@ import { IContent, ITechnology } from '../../../interfaces/common';
 import reactTailwindFilesAndContent from '../../../data/reactTailwindFilesAndContent';
 import ApiError from '../../../errors/ApiError';
 import httpStatus from 'http-status';
-import firebaseFolder from '../../../data/firebaseFolder';
+import { firebaseFolder } from '../../../data/firebaseFolder';
 import { firebaseHookGenerator } from '../../../helpers/firebaseHookGenerator';
 import { IFirebaseAuth } from './react.folder.creator.interface';
 import reactJsHooks from '../../../data/reactJsHooks';
+import { reduxConfigFile } from '../../../data/reduxConfigFile';
 
 export const availableHooks = [
   'useCustomHook.ts',
@@ -95,12 +96,18 @@ const reactPagesGenerator = (
   return newPages;
 };
 
-const createReduxApiSlicesFile = (apis: string[]): IContent[] => {
+const createReduxApiSlicesFile = (
+  apis: string[],
+  technology: ITechnology,
+  withoutSrc?: boolean
+): IContent[] => {
   let newReduxApiSlice: IContent[] = [];
 
   apis.forEach(singleName => {
     const { lowerCaseName } = fileName(singleName);
-
+    const filePath = `${
+      withoutSrc ? '' : 'src\\redux\\features\\'
+    }${singleName}\\${singleName}Api.${technology}`;
     const singleModules = {
       content: singleFileCreatorHelper(
         reduxTsApiFileContent,
@@ -108,7 +115,7 @@ const createReduxApiSlicesFile = (apis: string[]): IContent[] => {
         false
       ),
       fileName: singleName,
-      filePath: `src\\redux\\features\\${singleName}\\${singleName}Api.ts`,
+      filePath,
     };
     newReduxApiSlice = [...newReduxApiSlice, singleModules];
   });
@@ -156,24 +163,33 @@ const changeExistingFileContent = (
   content: string,
   allFilesAndFolder: IContent[]
 ): void => {
+  console.log(filPath);
   const findIndex = allFilesAndFolder.findIndex(
     single => single.filePath === filPath
   );
+  if (findIndex === -1) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'File not found to change');
+  }
   allFilesAndFolder[findIndex].content = content;
 };
 
 const addWrapper = (
   allFileAndFolder: IContent[],
+  technology: ITechnology,
   importFrom: string,
   wrapperNameFirst?: string,
   wrapperNameLast?: string
 ): void => {
+  const fileExtension = technology === ITechnology.JavaScript ? 'js' : 'tsx';
   const indexJsFile = allFileAndFolder.find(
-    single => single.filePath === 'src\\index.js'
+    single => single.filePath === `src\\index.${fileExtension}`
   );
 
   if (!indexJsFile) {
-    throw new ApiError(httpStatus.BAD_REQUEST, `can't find index.js File`);
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      `can't find index.${fileExtension} File`
+    );
   }
   if (wrapperNameFirst) {
     indexJsFile.content = indexJsFile.content.replace(
@@ -250,7 +266,11 @@ const addFirebase = (
     ),
   };
 
-  allFileAndFolder.push(...firebaseFolder, useFirebaseHook);
+  if (technology === ITechnology.JavaScript) {
+    allFileAndFolder.push(...firebaseFolder.jsFolder, useFirebaseHook);
+  } else {
+    allFileAndFolder.push(...firebaseFolder.tsFolder, useFirebaseHook);
+  }
   // add Env
   if (Object.keys(firebaseAuth.config).length) {
     const config = firebaseAuth.config;
@@ -276,6 +296,31 @@ REACT_APP_MEASUREMENT_ID=${config.measurementId}
     { name: 'firebase', version: '^10.4.0' },
   ]);
 };
+
+const addRedux = (
+  allFilesAndFolder: IContent[],
+  technology: ITechnology
+): void => {
+  // add npm package
+  packageJsonFile.addDependenciesToProject(allFilesAndFolder, [
+    { name: '@reduxjs/toolkit', version: '^1.9.5' },
+    { name: 'react-redux', version: '^8.1.1' },
+  ]);
+  if (technology === ITechnology.JavaScript) {
+    allFilesAndFolder.push(...reduxConfigFile.reactReduxJsContent);
+  } else {
+    allFilesAndFolder.push(...reduxConfigFile.reactReduxTsContent);
+  }
+  addWrapper(
+    allFilesAndFolder,
+    technology,
+    `import { Provider } from "react-redux";
+  import { store } from "./redux/app/store";
+  `,
+    `Provider store={store}`,
+    'Provider'
+  );
+};
 export const reactGenerator = {
   createReduxApiSlicesFile,
   appFileContentGenerate,
@@ -287,4 +332,5 @@ export const reactGenerator = {
   addMUiToReact,
   addWrapper,
   addFirebase,
+  addRedux,
 };

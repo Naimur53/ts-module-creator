@@ -34,7 +34,7 @@ export type ICssFramework = {
   addWraps: IWrap[];
 };
 
-export type IReactReduxTemplateRequestBody = {
+export type IReactTemplateRequestBody = {
   apis?: string[];
   pages?: string[];
   hooks?: string[];
@@ -45,8 +45,7 @@ export type IReactReduxTemplateRequestBody = {
   othersFileFolder?: IContent[];
 };
 
-export type IReactReduxTemplateRequestService =
-  IReactReduxTemplateRequestBody & {
-    shouldComment: boolean;
-    name: string;
-  };
+export type IReactTemplateRequestService = IReactTemplateRequestBody & {
+  shouldComment: boolean;
+  name: string;
+};

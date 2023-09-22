@@ -5,7 +5,6 @@ import { IContent } from '../../../interfaces/common';
 const fileToJsonCreator = async (): Promise<IContent[]> => {
   function readDirectoryRecursively(rootDir: string) {
     const filesArray: IContent[] = [];
-
     function readDirectory(dir: string, currentPath: string) {
       // Read the contents of the directory
       const files = fs.readdirSync(dir);
@@ -19,8 +18,8 @@ const fileToJsonCreator = async (): Promise<IContent[]> => {
           // Recursively read subdirectories
           readDirectory(filePath, path.join(currentPath, file));
         } else {
-          // Read file content
-          const content = fs.readFileSync(filePath, 'utf8');
+          // Read file content as binary
+          const content = fs.readFileSync(filePath, 'binary');
 
           // Create an object with file information
           const fileInfo = {
