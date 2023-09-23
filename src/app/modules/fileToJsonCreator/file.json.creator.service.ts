@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 import { IContent } from '../../../interfaces/common';
-
 const fileToJsonCreator = async (): Promise<IContent[]> => {
   function readDirectoryRecursively(rootDir: string) {
     const filesArray: IContent[] = [];
@@ -38,7 +37,7 @@ const fileToJsonCreator = async (): Promise<IContent[]> => {
     return filesArray;
   }
 
-  const rootPath = 'src/templates/pure-react'; // Root path
+  const rootPath = 'src/templates/my-nextjs-js'; // Root path
   const fileObjectsArray = readDirectoryRecursively(rootPath);
   return fileObjectsArray;
 };

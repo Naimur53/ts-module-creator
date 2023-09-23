@@ -108,6 +108,7 @@ const createReduxApiSlicesFile = (
     const filePath = `${
       withoutSrc ? '' : 'src\\redux\\features\\'
     }${singleName}\\${singleName}Api.${technology}`;
+
     const singleModules = {
       content: singleFileCreatorHelper(
         reduxTsApiFileContent,

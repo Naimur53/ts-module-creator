@@ -1,3 +1,4 @@
+import { createNextJsFolderRoute } from './../modules/nextJsFolderCreator/nextJsFolderCreator.route';
 import express from 'express';
 import { createFolderRoute } from '../modules/mongooseFolderCreator/mongoose.folder.creator.route';
 import { createPrismaFolderRoute } from '../modules/prismaCreator/prisma.creator.route';
@@ -22,6 +23,10 @@ const moduleRoutes = [
   {
     path: '/react',
     route: createRectFolderRoute,
+  },
+  {
+    path: '/next',
+    route: createNextJsFolderRoute,
   },
   {
     path: '/create-json-file',
