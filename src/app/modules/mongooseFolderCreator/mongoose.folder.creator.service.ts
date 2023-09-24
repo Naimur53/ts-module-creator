@@ -5,8 +5,32 @@ import { IMongooseTemplateBodyRequest } from './mongoose.folder.creator.interfac
 import mongooseTemplates from '../../../data/mongooseTemplatesContent';
 import { mongooseGenerator } from './mongoose.folder.creator.utils';
 
+const createMongooseModules = async ({
+  modules,
+}: IMongooseTemplateBodyRequest): Promise<Archiver> => {
+  const archive = archiver('zip', {
+    zlib: { level: 9 }, // Set compression level
+  });
+
+  const allFilesAndFolder: IContent[] = [];
+
+  mongooseGenerator.createModules(allFilesAndFolder, modules, true);
+
+  // create all folder and file
+  allFilesAndFolder.forEach(ele => {
+    archive.append(
+      // singleFileCreatorHelper(ele.content, name, Boolean(shouldComment)),
+      ele.content,
+
+      {
+        name: ele.filePath + '',
+      }
+    );
+  });
+
+  return archive;
+};
 const createMongooseTemplate = async ({
-  name,
   modules,
 }: IMongooseTemplateBodyRequest): Promise<Archiver> => {
   const archive = archiver('zip', {
@@ -44,4 +68,5 @@ const createMongooseTemplate = async ({
 };
 export const mongooseFolderCreatorService = {
   createMongooseTemplate,
+  createMongooseModules,
 };

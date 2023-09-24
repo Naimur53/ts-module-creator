@@ -93,7 +93,8 @@ function generateConstantFile(
 }
 const createModules = (
   allFileAndFolder: IContent[],
-  modules: IModules[]
+  modules: IModules[],
+  modulesOnly?: boolean
 ): void => {
   modules.forEach(singleModule => {
     const { lowerCaseName } = fileName(singleModule.name);
@@ -101,6 +102,9 @@ const createModules = (
     mongooseAllFileContent
       .getAllFileContentOfSingleModels(singleModule.shouldAddPaginationAndQuery)
       .forEach(singleFile => {
+        const filePath = `${modulesOnly ? '' : 'src\\app\\modules\\'}${
+          singleModule.name
+        }\\${lowerCaseName}.${singleFile.fileName}.ts`;
         const singleModuleFile = {
           content: singleFileCreatorHelper(
             singleFile.content,
@@ -108,9 +112,9 @@ const createModules = (
             false
           ),
           fileName: singleFile.fileName,
-          filePath: `src\\app\\modules\\${singleModule.name}\\${lowerCaseName}.${singleFile.fileName}.ts`,
+          filePath,
         };
-        console.log('hi', singleModule);
+
         if (singleModule.fields?.length) {
           if (singleFile.fileName === 'model') {
             singleModuleFile.content = generateMongooseSchema(

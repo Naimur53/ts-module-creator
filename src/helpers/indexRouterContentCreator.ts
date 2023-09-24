@@ -19,6 +19,7 @@ const indexRouterContentController = (allModules: string[]): string => {
   //   main content of routes/index.ts
 
   const mainContent = `${importContent}
+  import express from 'express';
     const router = express.Router();
 
     const moduleRoutes = [
