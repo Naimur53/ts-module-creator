@@ -4,11 +4,11 @@ const prismaAllFileContents: IContent[] = [
   {
     fileName: 'constant',
     content: `
-        export const demoSearchableFields = ['your key'];
+        export const demoSearchableFields = [ 
+          
+        ];
         export const demoFilterAbleFields = [
-            'code',
-            'startMonth',
-            'endMonth',
+            
           ];
           
         `,

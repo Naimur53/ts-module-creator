@@ -37,7 +37,7 @@ const fileToJsonCreator = async (): Promise<IContent[]> => {
     return filesArray;
   }
 
-  const rootPath = 'src/templates/my-nextjs-js'; // Root path
+  const rootPath = 'src/templates/ts-node-server-mongo'; // Root path
   const fileObjectsArray = readDirectoryRecursively(rootPath);
   return fileObjectsArray;
 };
