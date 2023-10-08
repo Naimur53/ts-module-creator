@@ -1,6 +1,6 @@
 import httpStatus from 'http-status';
 import ApiError from '../errors/ApiError';
-import { ITechnology } from '../interfaces/common';
+import { ILanguage } from '../interfaces/common';
 
 const allAuthMethods = [
   {
@@ -102,7 +102,7 @@ const allAuthMethods = [
 
 const generateUseFirebaseHookContent = (
   auths: string[],
-  technology: ITechnology
+  technology: ILanguage
 ): string => {
   const authMethods = allAuthMethods.filter(single =>
     auths.includes(single.name)
@@ -274,7 +274,7 @@ const generateUseFirebaseHookContent = (
     export default useFirebaseAuth;
   
   `;
-  return technology === ITechnology.JavaScript ? js : ts;
+  return technology === ILanguage.JavaScript ? js : ts;
 };
 export const firebaseHookGenerator = {
   generateUseFirebaseHookContent,

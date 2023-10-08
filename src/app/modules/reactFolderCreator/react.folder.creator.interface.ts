@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { IContent, ITechnology } from '../../../interfaces/common';
+import { IContent, ILanguage } from '../../../interfaces/common';
 
 // MUI = 'MUI (Material-UI)',
 // TailwindCSS = 'Tailwind CSS',
@@ -39,7 +39,7 @@ export type IReactTemplateRequestBody = {
   pages?: string[];
   hooks?: string[];
   firebaseAuth?: IFirebaseAuth;
-  technology: ITechnology;
+  technology: ILanguage;
   npmPackages?: INpmPackage[];
   wrappers?: IWrap[];
   othersFileFolder?: IContent[];

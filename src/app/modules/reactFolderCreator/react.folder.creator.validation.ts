@@ -24,7 +24,7 @@ const reactFolderCreatorTemplateSchema = z.object({
             }),
           })
           .optional(),
-        auth: z.array(z.string().regex(camelCase)),
+        auth: z.array(z.string()).optional(),
       })
       .optional(),
     technology: z.enum(['js', 'ts']),

@@ -1,10 +1,19 @@
 import httpStatus from 'http-status';
 import ApiError from '../errors/ApiError';
-import { jwtHelpers } from './jwtHelpers';
 import config from '../config';
-import { Secret } from 'jsonwebtoken';
+import admin, { ServiceAccount } from 'firebase-admin';
+import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier';
 
-function authJwtValidation(token: string | undefined): any {
+if (config.firebase) {
+  admin.initializeApp({
+    credential: admin.credential.cert(config.firebase as ServiceAccount),
+  });
+}
+const auth = admin.auth();
+
+async function authJwtValidation(
+  token: string | undefined
+): Promise<DecodedIdToken | null> {
   // if no token found
   if (!token) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'You are not authorized');
@@ -12,8 +21,7 @@ function authJwtValidation(token: string | undefined): any {
   // verify token
   let verifiedUser = null;
 
-  verifiedUser = jwtHelpers.verifyToken(token, config.jwt.secret as Secret);
-
+  verifiedUser = await auth.verifyIdToken(token);
   // // role guard
   // if (requiredRoles.length && !requiredRoles.includes(verifiedUser.role)) {
   //   throw new ApiError(httpStatus.FORBIDDEN, 'Forbidden');

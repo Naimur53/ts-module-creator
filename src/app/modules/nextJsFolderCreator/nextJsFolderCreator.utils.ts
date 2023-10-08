@@ -2,14 +2,14 @@ import httpStatus from 'http-status';
 import nextJsPageContent from '../../../data/nextJsPageContent';
 import fileName from '../../../helpers/fileName';
 import singleFileCreatorHelper from '../../../helpers/singleFileCreatorHelper';
-import { IContent, ITechnology } from '../../../interfaces/common';
+import { IContent, ILanguage } from '../../../interfaces/common';
 import ApiError from '../../../errors/ApiError';
 import { packageJsonFile } from '../../../helpers/packageJsonFile';
 import { reduxConfigFile } from '../../../data/reduxConfigFile';
 
 const nextPagesGenerator = (
   pages: string[],
-  technology: ITechnology
+  technology: ILanguage
 ): IContent[] => {
   let newPages: IContent[] = [];
   pages.forEach(singlePage => {
@@ -18,7 +18,7 @@ const nextPagesGenerator = (
       content: singleFileCreatorHelper(nextJsPageContent, lowerCaseName, false),
       fileName: singlePage,
       filePath: `src\\pages\\${lowerCaseName}.${
-        technology === ITechnology.JavaScript ? 'js' : 'tsx'
+        technology === ILanguage.JavaScript ? 'js' : 'tsx'
       }`,
     };
 
@@ -29,12 +29,12 @@ const nextPagesGenerator = (
 
 const addWrapper = (
   allFileAndFolder: IContent[],
-  technology: ITechnology,
+  technology: ILanguage,
   importFrom: string,
   wrapperNameFirst?: string,
   wrapperNameLast?: string
 ): void => {
-  const fileExtension = technology === ITechnology.JavaScript ? 'js' : 'tsx';
+  const fileExtension = technology === ILanguage.JavaScript ? 'js' : 'tsx';
   const appFile = allFileAndFolder.find(
     single => single.filePath === `src\\pages\\_app.${fileExtension}`
   );
@@ -80,14 +80,14 @@ const addWrapper = (
 
 const addRedux = (
   allFilesAndFolder: IContent[],
-  technology: ITechnology
+  technology: ILanguage
 ): void => {
   // add npm package
   packageJsonFile.addDependenciesToProject(allFilesAndFolder, [
     { name: '@reduxjs/toolkit', version: '^1.9.5' },
     { name: 'react-redux', version: '^8.1.1' },
   ]);
-  if (technology === ITechnology.JavaScript) {
+  if (technology === ILanguage.JavaScript) {
     allFilesAndFolder.push(...reduxConfigFile.reactReduxJsContent);
   } else {
     allFilesAndFolder.push(...reduxConfigFile.reactReduxTsContent);

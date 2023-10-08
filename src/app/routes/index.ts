@@ -5,6 +5,7 @@ import { createPrismaFolderRoute } from '../modules/prismaCreator/prisma.creator
 import { FileToJsonCreatorRoute } from '../modules/fileToJsonCreator/file.json.creator.router';
 import { createRectFolderRoute } from '../modules/reactFolderCreator/react.folder.creator.route';
 import { UserRoutes } from '../modules/user/user.router';
+import { CreationRoutes } from '../modules/creation/creation.router';
 const router = express.Router();
 
 const moduleRoutes = [
@@ -27,6 +28,10 @@ const moduleRoutes = [
   {
     path: '/next',
     route: createNextJsFolderRoute,
+  },
+  {
+    path: '/creation',
+    route: CreationRoutes,
   },
   {
     path: '/create-json-file',

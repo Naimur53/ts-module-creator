@@ -28,7 +28,7 @@ const nextJsFileJsContent: IContent[] = [
     fileName: 'package.json',
     filePath: 'package.json',
     content:
-      '{\n  "name": "demo",\n  "version": "0.1.0",\n  "private": true,\n  "scripts": {\n    "dev": "next dev",\n    "build": "next build",\n    "start": "next start",\n    "lint": "next lint"\n  },\n  "dependencies": {\n    "eslint": "8.50.0",\n    "eslint-config-next": "13.5.2",\n    "next": "13.5.2",\n    "react": "18.2.0",\n    "react-dom": "18.2.0"\n  }\n}\n',
+      '{\n  "name": "demo",\n  "version": "0.1.0",\n  "private": true,\n  "scripts": {\n    "dev": "next dev",\n    "build": "next build",\n    "start": "next start",\n "init": "npx prettier --write . && npm install",   "lint": "next lint"\n  },\n  "dependencies": {\n    "eslint": "8.50.0",\n    "eslint-config-next": "13.5.2",\n    "next": "13.5.2",\n    "react": "18.2.0",\n    "react-dom": "18.2.0"\n  }\n}\n',
   },
   {
     fileName: 'favicon.ico',

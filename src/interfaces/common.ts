@@ -31,11 +31,34 @@ export type IPackage = {
   version: string;
 };
 
-export enum ITechnology {
+export enum ILanguage {
   // eslint-disable-next-line no-unused-vars
   JavaScript = 'js',
   // eslint-disable-next-line no-unused-vars
   Typescript = 'ts',
+}
+
+export enum ITechnology {
+  // eslint-disable-next-line no-unused-vars
+  ReactTemplate = 'react-template',
+  // eslint-disable-next-line no-unused-vars
+  ReactRedux = 'reactRedux-template',
+  // eslint-disable-next-line no-unused-vars
+  ReactReduxApi = 'reactRedux-api',
+  // eslint-disable-next-line no-unused-vars
+  NextJsTemplate = 'nextjs-template',
+  // eslint-disable-next-line no-unused-vars
+  NextJsReduxTemplate = 'nextjsRedux-template',
+  // eslint-disable-next-line no-unused-vars
+  NextJsReduxApi = 'nextjsRedux-api',
+  // eslint-disable-next-line no-unused-vars
+  MongooseTemplate = 'mongoose-template',
+  // eslint-disable-next-line no-unused-vars
+  MongooseModule = 'mongoose-modules',
+  // eslint-disable-next-line no-unused-vars
+  PostgresTemplate = 'mongoose-template',
+  // eslint-disable-next-line no-unused-vars
+  PostgresModule = 'mongoose-modules',
 }
 
 export type IAdditionalDependencies = {

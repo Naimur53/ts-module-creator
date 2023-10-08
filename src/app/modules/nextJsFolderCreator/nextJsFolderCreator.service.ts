@@ -1,6 +1,6 @@
 import archiver from 'archiver';
 import { IReactTemplateRequestService } from '../reactFolderCreator/react.folder.creator.interface';
-import { IContent, ITechnology } from '../../../interfaces/common';
+import { IContent, ILanguage } from '../../../interfaces/common';
 import { packageJsonFile } from '../../../helpers/packageJsonFile';
 import { nextJsGenerator } from './nextJsFolderCreator.utils';
 import { reactGenerator } from '../reactFolderCreator/react.folder.creator.utils';
@@ -24,7 +24,7 @@ const createNextTemplate = async ({
 
   const allFilesAndFolder: IContent[] = JSON.parse(
     JSON.stringify(
-      technology === ITechnology.JavaScript
+      technology === ILanguage.JavaScript
         ? nextJsFileJsContent
         : nextJsFileTsContent
     )

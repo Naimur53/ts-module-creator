@@ -1,5 +1,5 @@
 import archiver, { Archiver } from 'archiver';
-import { IContent, ITechnology } from '../../../interfaces/common';
+import { IContent, ILanguage } from '../../../interfaces/common';
 import { IReactTemplateRequestService } from './react.folder.creator.interface';
 import { reactGenerator } from './react.folder.creator.utils';
 import pureReact from '../../../data/pureReact';
@@ -16,7 +16,7 @@ const createReactReduxFeatures = async ({
   apis: string[];
   shouldComment: boolean;
   name: string;
-  technology: ITechnology;
+  technology: ILanguage;
 }): Promise<Archiver> => {
   const archive = archiver('zip', {
     zlib: { level: 9 }, // Set compression level
@@ -48,16 +48,16 @@ const createReactTemplate = async ({
   });
 
   const allFilesAndFolder: IContent[] = JSON.parse(
-    JSON.stringify(technology === ITechnology.JavaScript ? pureReact : reactTs)
+    JSON.stringify(technology === ILanguage.JavaScript ? pureReact : reactTs)
   );
-
+  console.log('h', othersFileFolder);
   // for creating pages
   if (pages) {
     allFilesAndFolder.push(
       ...reactGenerator.reactPagesGenerator(pages, technology)
     );
     const appFilePath = `src\\App.${
-      technology === ITechnology.JavaScript ? technology : 'tsx'
+      technology === ILanguage.JavaScript ? technology : 'tsx'
     }`;
     reactGenerator.changeExistingFileContent(
       appFilePath,
@@ -80,11 +80,12 @@ const createReactTemplate = async ({
 
   // reactGenerator.addTailwindToReact(allFilesAndFolder);
   // adding others files Or folders
-  if (othersFileFolder) {
+  if (othersFileFolder?.length) {
+    console.log('----------------------hi---------------------');
     allFilesAndFolder.push(...othersFileFolder);
   }
   // add warper
-  if (wrappers) {
+  if (wrappers?.length) {
     wrappers.forEach(ele => {
       reactGenerator.addWrapper(
         allFilesAndFolder,

@@ -54,8 +54,7 @@ const getAllUser = async (
   const result = await User.find(whereConditions)
     .sort({ _id: -1 })
     .skip(skip)
-    .limit(limit)
-    .populate('creator');
+    .limit(limit);
 
   const total = await User.countDocuments();
 
@@ -69,9 +68,21 @@ const getAllUser = async (
   };
 };
 
-const createUser = async (payload: IUser): Promise<IUser | null> => {
-  const newUser = await User.create(payload);
-  return newUser;
+const signInUser = async (payload: IUser): Promise<IUser | null> => {
+  let user: IUser | null = null;
+  const isUserExist = await User.isUserExistByUid(payload.uid);
+
+  if (!isUserExist?._id) {
+    user = await User.create(payload);
+  } else {
+    // user user info
+    user = await updateUser(isUserExist._id, {
+      lastLoginAt: payload.lastLoginAt,
+    });
+  }
+  console.log(user);
+
+  return user;
 };
 
 const updateUser = async (
@@ -98,7 +109,7 @@ const deleteUser = async (id: string): Promise<IUser | null> => {
 
 export const UserService = {
   getAllUser,
-  createUser,
+  signInUser,
   updateUser,
   getSingleUser,
   deleteUser,

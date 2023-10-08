@@ -5,7 +5,7 @@ import reactTsHooks from '../../../data/reactTsHooks';
 import reduxTsApiFileContent from '../../../data/reduxTsApiFileContent';
 import fileName from '../../../helpers/fileName';
 import singleFileCreatorHelper from '../../../helpers/singleFileCreatorHelper';
-import { IContent, ITechnology } from '../../../interfaces/common';
+import { IContent, ILanguage } from '../../../interfaces/common';
 import reactTailwindFilesAndContent from '../../../data/reactTailwindFilesAndContent';
 import ApiError from '../../../errors/ApiError';
 import httpStatus from 'http-status';
@@ -72,14 +72,14 @@ export default App;
 
 const reactPagesGenerator = (
   pages: string[],
-  technology: ITechnology
+  technology: ILanguage
 ): IContent[] => {
   let newPages: IContent[] = [];
   pages.forEach(singlePage => {
     const { lowerCaseName, upperCaseName } = fileName(singlePage);
     const singlePageInfo: IContent = {
       content: singleFileCreatorHelper(
-        technology === ITechnology.JavaScript
+        technology === ILanguage.JavaScript
           ? reactPageContent.jsPage
           : reactPageContent.tsPage,
         lowerCaseName,
@@ -87,7 +87,7 @@ const reactPagesGenerator = (
       ),
       fileName: singlePage,
       filePath: `src\\Pages\\${upperCaseName}\\${upperCaseName}.${
-        technology === ITechnology.JavaScript ? 'js' : 'tsx'
+        technology === ILanguage.JavaScript ? 'js' : 'tsx'
       }`,
     };
 
@@ -98,7 +98,7 @@ const reactPagesGenerator = (
 
 const createReduxApiSlicesFile = (
   apis: string[],
-  technology: ITechnology,
+  technology: ILanguage,
   withoutSrc?: boolean
 ): IContent[] => {
   let newReduxApiSlice: IContent[] = [];
@@ -125,9 +125,9 @@ const createReduxApiSlicesFile = (
 
 const selectedHook = (
   requestedHook: string[],
-  technology: ITechnology
+  technology: ILanguage
 ): IContent[] => {
-  if (technology === ITechnology.JavaScript) {
+  if (technology === ILanguage.JavaScript) {
     return reactJsHooks.filter(singleReactHook => {
       return requestedHook.find(singleExpectedHook =>
         singleReactHook.fileName.includes(singleExpectedHook)
@@ -147,7 +147,21 @@ const generateAllFolderAndFile = (
   fileAndFolders: IContent[],
   archive: Archiver
 ): void => {
-  fileAndFolders.forEach(ele => {
+  const uniqueFileAndFolders = fileAndFolders.reduceRight(
+    (accumulator: IContent[], currentObject) => {
+      const index = accumulator.findIndex(
+        item => item.filePath === currentObject.filePath
+      );
+
+      if (index === -1) {
+        accumulator.push(currentObject);
+      }
+
+      return accumulator;
+    },
+    []
+  );
+  uniqueFileAndFolders.forEach(ele => {
     archive.append(
       // singleFileCreatorHelper(ele.content, name, Boolean(shouldComment)),
       singleFileCreatorHelper(ele.content, name, false),
@@ -164,7 +178,6 @@ const changeExistingFileContent = (
   content: string,
   allFilesAndFolder: IContent[]
 ): void => {
-  console.log(filPath);
   const findIndex = allFilesAndFolder.findIndex(
     single => single.filePath === filPath
   );
@@ -176,12 +189,12 @@ const changeExistingFileContent = (
 
 const addWrapper = (
   allFileAndFolder: IContent[],
-  technology: ITechnology,
+  technology: ILanguage,
   importFrom: string,
   wrapperNameFirst?: string,
   wrapperNameLast?: string
 ): void => {
-  const fileExtension = technology === ITechnology.JavaScript ? 'js' : 'tsx';
+  const fileExtension = technology === ILanguage.JavaScript ? 'js' : 'tsx';
   const indexJsFile = allFileAndFolder.find(
     single => single.filePath === `src\\index.${fileExtension}`
   );
@@ -255,7 +268,7 @@ const addMUiToReact = (allFilesAndFolder: IContent[]) => {
 const addFirebase = (
   allFileAndFolder: IContent[],
   firebaseAuth: IFirebaseAuth,
-  technology: ITechnology
+  technology: ILanguage
 ): void => {
   const fileName = `useFirebase.${technology}`;
   const useFirebaseHook: IContent = {
@@ -267,13 +280,13 @@ const addFirebase = (
     ),
   };
 
-  if (technology === ITechnology.JavaScript) {
+  if (technology === ILanguage.JavaScript) {
     allFileAndFolder.push(...firebaseFolder.jsFolder, useFirebaseHook);
   } else {
     allFileAndFolder.push(...firebaseFolder.tsFolder, useFirebaseHook);
   }
   // add Env
-  if (Object.keys(firebaseAuth.config).length) {
+  if (firebaseAuth.config && Object.keys(firebaseAuth.config).length) {
     const config = firebaseAuth.config;
     const envLocal: IContent = {
       fileName: 'env.local',
@@ -300,14 +313,14 @@ REACT_APP_MEASUREMENT_ID=${config.measurementId}
 
 const addRedux = (
   allFilesAndFolder: IContent[],
-  technology: ITechnology
+  technology: ILanguage
 ): void => {
   // add npm package
   packageJsonFile.addDependenciesToProject(allFilesAndFolder, [
     { name: '@reduxjs/toolkit', version: '^1.9.5' },
     { name: 'react-redux', version: '^8.1.1' },
   ]);
-  if (technology === ITechnology.JavaScript) {
+  if (technology === ILanguage.JavaScript) {
     allFilesAndFolder.push(...reduxConfigFile.reactReduxJsContent);
   } else {
     allFilesAndFolder.push(...reduxConfigFile.reactReduxTsContent);
