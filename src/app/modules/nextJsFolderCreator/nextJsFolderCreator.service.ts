@@ -39,7 +39,7 @@ const createNextTemplate = async ({
   // for api slice redux
   if (apis?.length) {
     allFilesAndFolder.push(
-      ...reactGenerator.createReduxApiSlicesFile(apis, technology)
+      ...reactGenerator.createReduxFeaturesFile(apis, technology)
     );
     // add redux
     nextJsGenerator.addRedux(allFilesAndFolder, technology);

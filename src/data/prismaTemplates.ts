@@ -54,8 +54,50 @@ const prismaTemplates = [
   {
     fileName: 'README.md',
     filePath: 'README.md',
-    content:
-      '## Live Link\n\nhttps://prisma-books-server.vercel.app/\n\n## Application Routes\n\n### user\n\n- `POST` https://prisma-books-server.vercel.app/api/v1/auth/signup\n- `POST` https://prisma-books-server.vercel.app/api/v1/auth/sigin\n- `GET` https://prisma-books-server.vercel.app/api/v1/users\n- `GET` https://prisma-books-server.vercel.app/api/v1/users/48c34655-4fef-42d4-aad1-9a4919f6858e\n- `PATCH` https://prisma-books-server.vercel.app/api/v1/users/48c34655-4fef-42d4-aad1-9a4919f6858e\n- `DELETE` https://prisma-books-server.vercel.app/api/v1/users/48c34655-4fef-42d4-aad1-9a4919f6858e\n- `GET` https://prisma-books-server.vercel.app/api/v1/profile\n\n### Category\n\n- `POST` https://prisma-books-server.vercel.app/api/v1/categories/create-category\n- `GET` https://prisma-books-server.vercel.app/api/v1/categories\n- `GET` https://prisma-books-server.vercel.app/api/v1/categories/9efa91b1-22a5-4250-acc5-a9e9f43a3717\n- `PATCH` https://prisma-books-server.vercel.app/api/v1/categories/9efa91b1-22a5-4250-acc5-a9e9f43a3717\n- `DELETE` https://prisma-books-server.vercel.app/api/v1/categories/9efa91b1-22a5-4250-acc5-a9e9f43a3717\n\n### Books\n\n- `POST` https://prisma-books-server.vercel.app/api/v1/books/create-book\n- `GET` https://prisma-books-server.vercel.app/api/v1/books\n- `GET` https://prisma-books-server.vercel.app/api/v1/books/9efa91b1-22a5-4250-acc5-a9e9f43a3717/category\n- `GET` https://prisma-books-server.vercel.app/api/v1/books/e665fc92-1d13-4f02-bdc6-5c116df771e3\n- `PATCH` https://prisma-books-server.vercel.app/api/v1/books/e665fc92-1d13-4f02-bdc6-5c116df771e3\n- `DELETE` https://prisma-books-server.vercel.app/api/v1/books/e665fc92-1d13-4f02-bdc6-5c116df771e3\n\n### Orders\n\n- `POST` https://prisma-books-server.vercel.app/api/v1/orders/create-order\n- `GET` https://prisma-books-server.vercel.app/api/v1/orders\n- `GET` https://prisma-books-server.vercel.app/api/v1/orders/6dc0385e-dd9a-4c90-b087-b6e5c939db33\n',
+    content: `
+      # Demo Project
+      
+      This is a brief description of your project.
+      
+      ## Getting Started
+      
+      These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+      
+      ### Prerequisites
+      
+      What things you need to install and how to install them:
+      
+      - Node.js (version 14 or higher)
+      - npm (version 7 or higher)
+      
+      ### Installing
+      
+      A step-by-step series of examples that tell you how to get a development environment running.
+      
+      1. Clone this repository to your local machine:
+      
+         \`\`\`bash
+         git clone https://github.com/your-username/your-project-name.git
+         \`\`\`
+      
+      2. Run scripts:
+      
+         \`\`\`bash
+         npm run init
+         \`\`\`
+      
+         Or
+      
+         \`\`\`bash
+         npm install
+         \`\`\`
+      
+      3. Start the project:
+      
+         \`\`\`bash
+         npm run dev
+         \`\`\`
+      `,
   },
   {
     fileName: 'auth.ts',

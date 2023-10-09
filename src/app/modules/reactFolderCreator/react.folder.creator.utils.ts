@@ -2,7 +2,7 @@ import { packageJsonFile } from './../../../helpers/packageJsonFile';
 import { Archiver } from 'archiver';
 import { reactPageContent } from '../../../data/reactPageContent';
 import reactTsHooks from '../../../data/reactTsHooks';
-import reduxTsApiFileContent from '../../../data/reduxTsApiFileContent';
+import { reduxFileContent } from '../../../data/reduxFileContent';
 import fileName from '../../../helpers/fileName';
 import singleFileCreatorHelper from '../../../helpers/singleFileCreatorHelper';
 import { IContent, ILanguage } from '../../../interfaces/common';
@@ -96,7 +96,7 @@ const reactPagesGenerator = (
   return newPages;
 };
 
-const createReduxApiSlicesFile = (
+const createReduxFeaturesFile = (
   apis: string[],
   technology: ILanguage,
   withoutSrc?: boolean
@@ -105,20 +105,43 @@ const createReduxApiSlicesFile = (
 
   apis.forEach(singleName => {
     const { lowerCaseName } = fileName(singleName);
-    const filePath = `${
-      withoutSrc ? '' : 'src\\redux\\features\\'
-    }${singleName}\\${singleName}Api.${technology}`;
+    const filePath = (extra: string) =>
+      `${
+        withoutSrc ? '' : 'src\\redux\\features\\'
+      }${singleName}\\${singleName}${extra}.${technology}`;
 
-    const singleModules = {
+    const apiSlice = {
       content: singleFileCreatorHelper(
-        reduxTsApiFileContent,
+        reduxFileContent.reduxTsApiFileContent,
         lowerCaseName,
         false
       ),
       fileName: singleName,
-      filePath,
+      filePath: filePath('Api'),
     };
-    newReduxApiSlice = [...newReduxApiSlice, singleModules];
+    const reducerSlice = {
+      content: singleFileCreatorHelper(
+        ILanguage.JavaScript === technology
+          ? reduxFileContent.reduxJsReducerContent
+          : reduxFileContent.reduxTsReducerContent,
+        lowerCaseName,
+        false
+      ),
+      fileName: singleName,
+      filePath: filePath('Slice'),
+    };
+    const selector = {
+      content: singleFileCreatorHelper(
+        ILanguage.JavaScript === technology
+          ? reduxFileContent.reduxJsSelector
+          : reduxFileContent.reduxTsSelector,
+        lowerCaseName,
+        false
+      ),
+      fileName: singleName,
+      filePath: filePath('Selector'),
+    };
+    newReduxApiSlice = [...newReduxApiSlice, apiSlice, reducerSlice, selector];
   });
   return newReduxApiSlice;
 };
@@ -336,7 +359,7 @@ const addRedux = (
   );
 };
 export const reactGenerator = {
-  createReduxApiSlicesFile,
+  createReduxFeaturesFile,
   appFileContentGenerate,
   reactPagesGenerator,
   selectedHook,

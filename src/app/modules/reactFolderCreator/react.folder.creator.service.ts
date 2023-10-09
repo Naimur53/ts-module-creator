@@ -26,7 +26,7 @@ const createReactReduxFeatures = async ({
     throw new ApiError(httpStatus.BAD_REQUEST, 'api Slice names not found!');
   }
   allFiles.push(
-    ...reactGenerator.createReduxApiSlicesFile(apis, technology, true)
+    ...reactGenerator.createReduxFeaturesFile(apis, technology, true)
   );
   reactGenerator.generateAllFolderAndFile(name, allFiles, archive);
   return archive;
@@ -68,7 +68,7 @@ const createReactTemplate = async ({
   // for api slice redux
   if (apis?.length) {
     allFilesAndFolder.push(
-      ...reactGenerator.createReduxApiSlicesFile(apis, technology)
+      ...reactGenerator.createReduxFeaturesFile(apis, technology)
     );
     // add redux
     reactGenerator.addRedux(allFilesAndFolder, technology);
