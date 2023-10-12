@@ -193,7 +193,7 @@ const prismaTemplates = [
     fileName: 'common.ts',
     filePath: 'src\\interfaces\\common.ts',
     content:
-      "import { IGenericErrorMessage } from './error';\n\nexport type IGenericResponse<T> = {\n  meta: {\n    page: number;\n    size: number;\n    total: number;\n    totalPage: number;\n  };\n  data: T;\n};\n\nexport type IGenericErrorResponse = {\n  statusCode: number;\n  message: string;\n  errorMessages: IGenericErrorMessage[];\n};\n",
+      "import { IGenericErrorMessage } from './error';\n\nexport type IGenericResponse<T> = {\n  meta: {\n    page: number;\n    limit: number;\n    total: number;\n      };\n  data: T;\n};\n\nexport type IGenericErrorResponse = {\n  statusCode: number;\n  message: string;\n  errorMessages: IGenericErrorMessage[];\n};\n",
   },
   {
     fileName: 'error.ts',
