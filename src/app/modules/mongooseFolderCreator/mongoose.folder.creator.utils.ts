@@ -102,9 +102,11 @@ const createModules = (
     mongooseAllFileContent
       .getAllFileContentOfSingleModels(singleModule.shouldAddPaginationAndQuery)
       .forEach(singleFile => {
+        // create file path
         const filePath = `${modulesOnly ? '' : 'src\\app\\modules\\'}${
           singleModule.name
         }\\${lowerCaseName}.${singleFile.fileName}.ts`;
+        // single module file content change with demo name
         const singleModuleFile = {
           content: singleFileCreatorHelper(
             singleFile.content,
@@ -114,6 +116,8 @@ const createModules = (
           fileName: singleFile.fileName,
           filePath,
         };
+
+        // create file content based on files name
 
         if (singleModule.fields?.length) {
           if (singleFile.fileName === 'model') {

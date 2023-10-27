@@ -13,8 +13,12 @@ const createPrismaTemplate = async ({
   });
 
   const newModules = prismaGenerator.modulesGenerator(modules);
-
-  const allFilesAndFolder = [...prismaTemplates, ...newModules];
+  const prismaSchemaFile = prismaGenerator.schemaGenerator(modules);
+  const allFilesAndFolder = [
+    ...prismaTemplates,
+    prismaSchemaFile,
+    ...newModules,
+  ];
   // change content for routes/index.ts
   const routesIndexTsFilePath = 'src\\app\\routes\\index.ts';
 
