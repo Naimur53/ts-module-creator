@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = __importDefault(require("./app"));
 const index_1 = __importDefault(require("./config/index"));
+const mongoose_1 = __importDefault(require("mongoose"));
 // import { logger } from './shared/logger';
 process.on('uncaughtException', error => {
     console.log(error);
@@ -23,15 +24,19 @@ let server;
 function bootstrap() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            // console.log(`🛢   Database is connecting...`);
-            // await mongoose.connect(config.database_url as string);
-            // console.log(`🛢   Database is connected successfully`);
+            console.log(`🛢   Database is connecting...`);
+            yield mongoose_1.default.connect(index_1.default.database_url);
+            console.log(`🛢   Database is connected successfully`);
             server = app_1.default.listen(index_1.default.port, () => {
                 console.log(`Application  listening on port ${index_1.default.port}`);
             });
         }
         catch (err) {
             console.log('Failed to connect database', err);
+            console.log('Restarting sever after 5 second... ');
+            setTimeout(() => {
+                bootstrap();
+            }, 5000);
         }
         process.on('unhandledRejection', error => {
             if (server) {

@@ -65,7 +65,3 @@ const globalErrorHandler = (error, req, res, next) => {
     });
 };
 exports.default = globalErrorHandler;
-//path:
-//message:
-// 2025 Fall
-// 2025 and

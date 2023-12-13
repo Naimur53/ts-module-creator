@@ -27,7 +27,7 @@ const modulesGenerator = (
   });
   return newModules;
 };
-function mapTypeToPrismaType(type: any) {
+function mapTypeToPrismaType(type: unknown) {
   // Add mappings for your data types to Prisma types as needed
   // You can expand this function to handle other data types
   switch (type) {

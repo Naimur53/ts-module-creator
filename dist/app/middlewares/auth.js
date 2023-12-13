@@ -13,12 +13,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const authJwtValidation_1 = __importDefault(require("../../helpers/authJwtValidation"));
-const auth = () => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const ApiError_1 = __importDefault(require("../../errors/ApiError"));
+const http_status_1 = __importDefault(require("http-status"));
+const user_model_1 = require("../modules/user/user.model");
+const auth = (forAdminOnly) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         //get authorization token
         const token = req.headers.authorization;
-        const verifiedUser = (0, authJwtValidation_1.default)(token);
-        req.user = verifiedUser; //
+        const verifiedUser = yield (0, authJwtValidation_1.default)(token);
+        if (!(verifiedUser === null || verifiedUser === void 0 ? void 0 : verifiedUser.uid)) {
+            throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'Token is not valid');
+        }
+        const isUserExist = yield user_model_1.User.isUserExistByUid(verifiedUser.uid);
+        if ((isUserExist === null || isUserExist === void 0 ? void 0 : isUserExist.isBlocked) || !isUserExist) {
+            throw new ApiError_1.default(http_status_1.default.FORBIDDEN, 'You are blocked');
+        }
+        if (forAdminOnly && !(isUserExist === null || isUserExist === void 0 ? void 0 : isUserExist.isAdmin)) {
+            throw new ApiError_1.default(http_status_1.default.FORBIDDEN, 'Forbidden');
+        }
+        req.user = {
+            displayName: verifiedUser.name,
+            email: verifiedUser.email,
+            uid: verifiedUser.uid,
+            _id: isUserExist === null || isUserExist === void 0 ? void 0 : isUserExist._id,
+        }; //
         next();
     }
     catch (error) {

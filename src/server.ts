@@ -21,6 +21,10 @@ async function bootstrap() {
     });
   } catch (err) {
     console.log('Failed to connect database', err);
+    console.log('Restarting sever after 5 second... ');
+    setTimeout(() => {
+      bootstrap();
+    }, 5000);
   }
 
   process.on('unhandledRejection', error => {

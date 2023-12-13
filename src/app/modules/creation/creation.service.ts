@@ -43,13 +43,15 @@ const getAllCreation = async (
   if (sortBy && sortOrder) {
     sortConditions[sortBy] = sortOrder;
   }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const whereConditions: any =
     andConditions.length > 0 ? { $and: andConditions } : {};
 
   const result = await Creation.find(whereConditions)
     .sort({ _id: -1 })
     .skip(skip)
-    .limit(limit);
+    .limit(limit)
+    .populate('user');
 
   const total = await Creation.countDocuments();
 

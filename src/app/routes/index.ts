@@ -2,7 +2,6 @@ import { createNextJsFolderRoute } from './../modules/nextJsFolderCreator/nextJs
 import express from 'express';
 import { createFolderRoute } from '../modules/mongooseFolderCreator/mongoose.folder.creator.route';
 import { createPrismaFolderRoute } from '../modules/prismaCreator/prisma.creator.route';
-import { FileToJsonCreatorRoute } from '../modules/fileToJsonCreator/file.json.creator.router';
 import { createRectFolderRoute } from '../modules/reactFolderCreator/react.folder.creator.route';
 import { UserRoutes } from '../modules/user/user.router';
 import { CreationRoutes } from '../modules/creation/creation.router';
@@ -33,10 +32,10 @@ const moduleRoutes = [
     path: '/creation',
     route: CreationRoutes,
   },
-  {
-    path: '/create-json-file',
-    route: FileToJsonCreatorRoute,
-  },
+  // {
+  //   path: '/create-json-file',
+  //   route: FileToJsonCreatorRoute,
+  // },
 ];
 
 moduleRoutes.forEach(route => router.use(route.path, route.route));

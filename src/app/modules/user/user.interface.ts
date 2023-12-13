@@ -5,7 +5,7 @@ export type IUser = {
   _id?: string;
   uid: string;
   displayName: string;
-  email: string;
+  email?: string;
   photoURL: string;
   emailVerified: boolean;
   isBlocked: boolean;
